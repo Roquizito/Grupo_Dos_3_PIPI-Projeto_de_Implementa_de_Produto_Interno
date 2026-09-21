@@ -1,4 +1,4 @@
-# Trabalho Prático: Otimização de Produto Matricial
+# Grupo dos 3 (Eduardo Estevam, Felipe Rezes, Roque Crisóstomo) - Trabalho Prático: Otimização de Produto Matricial
 
 ## 1. Contexto e Objetivos
 
