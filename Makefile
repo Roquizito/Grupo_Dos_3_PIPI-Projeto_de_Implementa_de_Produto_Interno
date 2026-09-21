@@ -50,3 +50,7 @@ gerar_matriz: $(SRC_DIR)/gerar_matriz.c
 	
 =======
 >>>>>>> b3ebf35375e834086bc4c6c5de7de160bee31418
+
+memcheck: matmul_base csv2bin
+	@echo "Executando Valgrind para auditar fugas de memória..."
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./matmul_base matrizA.bin matrizB.bin matrizC_valgrind.bin
