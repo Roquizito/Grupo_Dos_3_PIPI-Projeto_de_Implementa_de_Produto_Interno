@@ -208,17 +208,17 @@ trabalho_pratico/
 │   └── ... (módulos auxiliares .c e .h)
 ├── relatorio.pdf
 └── maquinas/
-    ├── aluno1/
+    ├── Felipe/
     │   ├── specs/ (cpu_info, ram_info, gcc_info)
     │   ├── asm/   (asm_base_aluno1.s, asm_fast_aluno1.s)
     │   ├── bin/   (matmul_base, matmul_o2, matmul_o3, matmul_fast)
     │   └── benchmark_aluno1.csv
-    ├── aluno2/
+    ├── Roque/
     │   ├── specs/
     │   ├── asm/
     │   ├── bin/
     │   └── benchmark_aluno2.csv
-    └── aluno3/
+    └── Eduardo/
         ├── specs/
         ├── asm/
         ├── bin/
