@@ -52,3 +52,4 @@ clean:
 
 gerar_matriz: $(SRC_DIR)/gerar_matriz.c
 	$(CC) $(CFLAGS) -O2 $< -o $@
+	
