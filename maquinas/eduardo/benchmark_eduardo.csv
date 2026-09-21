@@ -1,0 +1,4 @@
+Alvo,Tamanho,TEMPO_IO,TEMPO_COMP,GFLOPS
+matmul_base,1000,0.557440,7.413221,0.2698
+matmul_base,2000,0.816442,60.160982,0.2660
+matmul_base,4000,
