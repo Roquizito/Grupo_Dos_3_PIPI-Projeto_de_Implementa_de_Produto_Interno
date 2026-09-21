@@ -1,23 +1,18 @@
 #!/bin/bash
 set -e
 
-# 1. Estrutura de diretórias do integrante (ex: aluno1)
-ALUNO_DIR="maquinas/aluno1"
+ALUNO_DIR="maquinas/"
 mkdir -p "$ALUNO_DIR/specs" "$ALUNO_DIR/asm" "$ALUNO_DIR/bin"
 
-# 2. Compilação de todos os alvos
 #make clean
 make all
 make gerar_matriz
 
-# Copia os binários compilados para a pasta de entrega
 cp matmul_base matmul_o2 matmul_o3 matmul_fast "$ALUNO_DIR/bin/"
 
-# 3. Inicialização do ficheiro de resultados em CSV
 BENCH_OUT="$ALUNO_DIR/benchmark_aluno1.csv"
 echo "Dimensao,Alvo,Tempo_IO,Tempo_COMP,GFLOPS" > "$BENCH_OUT"
 
-# 4. Bateria de testes para as ordens 1000x1000, 2000x2000 e 4000x4000
 TAMANHOS=(1000 2000 4000)
 ALVOS=("matmul_base" "matmul_o2" "matmul_o3" "matmul_fast")
 
@@ -42,7 +37,6 @@ for N in "${TAMANHOS[@]}"; do
     done
 done
 
-# 5. Recolha de hardware e desmontagem de código de máquina (Disassembly)
 make specs
 mv specs/* "$ALUNO_DIR/specs/"
 rmdir specs
