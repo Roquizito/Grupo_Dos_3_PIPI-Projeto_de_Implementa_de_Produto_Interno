@@ -1,25 +1,54 @@
 CC = gcc
-CFLAGS_BASE = -O0 -g0
-CFLAGS_O2 = -O2
-CFLAGS_O3 = -O3
-CFLAGS_FAST = -O3 -march=native -ffast-math -funroll-loops
+CFLAGS = -Wall -Wextra -std=c11
 
-all: csv2bin bin2csv matmul_base matmul_o2 matmul_o3 matmul_fast
+SRC_DIR = src
 
-csv2bin: src/csv2bin.c
-	$(CC) $(CFLAGS_O3) $< -o $@
+# Fontes dos módulos
+MATMUL_SRC = $(SRC_DIR)/matmul.c
+CSV2BIN_SRC = $(SRC_DIR)/csv2bin.c
+BIN2CSV_SRC = $(SRC_DIR)/bin2csv.c
 
-bin2csv: src/bin2csv.c
-	$(CC) $(CFLAGS_O3) $< -o $@
+# Executáveis a gerar
+UTILITIES = csv2bin bin2csv
+MATMUL_TARGETS = matmul_base matmul_o2 matmul_o3 matmul_fast
 
-matmul_base: src/matmul.c
-	$(CC) $(CFLAGS_BASE) $< -o maquinas/roque/bin/$@
+.PHONY: all clean specs asm
 
-matmul_o2: src/matmul.c
-	$(CC) $(CFLAGS_O2) $< -o maquinas/roque/bin/$@
+all: $(UTILITIES) $(MATMUL_TARGETS)
 
-matmul_o3: src/matmul.c
-	$(CC) $(CFLAGS_O3) $< -o maquinas/roque/bin/$@
+# Utilitários de Conversão E/S
+csv2bin: $(CSV2BIN_SRC)
+	$(CC) $(CFLAGS) -O2 $< -o $@
 
-matmul_fast: src/matmul.c
-	$(CC) $(CFLAGS_FAST) $< -o maquinas/roque/bin/$@
+bin2csv: $(BIN2CSV_SRC)
+	$(CC) $(CFLAGS) -O2 $< -o $@
+
+# Alvos do Motor Matricial com Níveis de Otimização
+matmul_base: $(MATMUL_SRC)
+	$(CC) $(CFLAGS) -O0 -g0 $< -o $@
+
+matmul_o2: $(MATMUL_SRC)
+	$(CC) $(CFLAGS) -O2 $< -o $@
+
+matmul_o3: $(MATMUL_SRC)
+	$(CC) $(CFLAGS) -O3 $< -o $@
+
+matmul_fast: $(MATMUL_SRC)
+	$(CC) $(CFLAGS) -O3 -march=native -ffast-math -funroll-loops $< -o $@
+
+# Utilitário para recolha de especificações do sistema (Executar em ambiente Linux/WSL)
+specs:
+	@mkdir -p specs
+	lscpu > specs/cpu_info.txt
+	lscpu -C >> specs/cpu_info.txt
+	free -h > specs/ram_info.txt
+	$(CC) --version > specs/gcc_info.txt
+	@echo "Especificações recolhidas com sucesso em specs/"
+
+# Limpeza dos binários gerados
+clean:
+	rm -f $(UTILITIES) $(MATMUL_TARGETS) *.bin *.csv
+	rm -rf specs
+
+gerar_matriz: $(SRC_DIR)/gerar_matriz.c
+	$(CC) $(CFLAGS) -O2 $< -o $@

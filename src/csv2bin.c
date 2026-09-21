@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <inttypes.h>
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {
@@ -8,38 +9,58 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    FILE *f_in = fopen(argv[1], "r");
-    FILE *f_out = fopen(argv[2], "wb");
-    if (!f_in || !f_out) {
-        fprintf(stderr, "Erro ao manipular arquivos.\n");
-        return 1;
+    FILE *csv = fopen(argv[1], "r");
+    if (!csv) { 
+        perror("Erro ao abrir ficheiro CSV"); 
+        return 1; 
+    }
+
+    FILE *bin = fopen(argv[2], "wb");
+    if (!bin) { 
+        perror("Erro ao abrir ficheiro BIN"); 
+        fclose(csv); 
+        return 1; 
     }
 
     uint64_t M, N;
-    if (fscanf(f_in, "%lu,%lu\n", &M, &N) != 2) {
+    // Lê a primeira linha com as dimensões M,N
+    if (fscanf(csv, "%" SCNu64 ",%" SCNu64 "\n", &M, &N) != 2) {
+        fprintf(stderr, "Erro ao ler as dimensões do CSV.\n");
+        fclose(csv);
+        fclose(bin);
         return 1;
     }
 
-    fwrite(&M, sizeof(uint64_t), 1, f_out);
-    fwrite(&N, sizeof(uint64_t), 1, f_out);
+    // Escreve o cabeçalho de 16 bytes no ficheiro binário
+    fwrite(&M, sizeof(uint64_t), 1, bin);
+    fwrite(&N, sizeof(uint64_t), 1, bin);
 
-    float *buffer = (float *)malloc(M * N * sizeof(float));
+    // Aloca um buffer contíguo para toda a matriz
+    size_t total_elements = M * N;
+    float *buffer = (float *)malloc(total_elements * sizeof(float));
     if (!buffer) {
+        perror("Erro de alocação de memória");
+        fclose(csv);
+        fclose(bin);
         return 1;
     }
 
-    for (uint64_t i = 0; i < M * N; i++) {
-        if (i % N == N - 1) {
-            fscanf(f_in, "%f\n", &buffer[i]);
-        } else {
-            fscanf(f_in, "%f,", &buffer[i]);
+    // Lê os valores float delimitados por vírgula
+    for (size_t i = 0; i < total_elements; i++) {
+        if (fscanf(csv, "%f,", &buffer[i]) != 1) {
+            fprintf(stderr, "Erro ao ler o elemento %zu.\n", i);
+            free(buffer);
+            fclose(csv);
+            fclose(bin);
+            return 1;
         }
     }
 
-    fwrite(buffer, sizeof(float), M * N, f_out);
+    // Escrita binária direta em disco numa única chamada
+    fwrite(buffer, sizeof(float), total_elements, bin);
 
     free(buffer);
-    fclose(f_in);
-    fclose(f_out);
+    fclose(csv);
+    fclose(bin);
     return 0;
-}
+}   
