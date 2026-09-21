@@ -1,2 +1,11 @@
+# Ignorar dados pesados e executáveis
 *.csv
 *.bin
+matmul_*
+csv2bin
+bin2csv
+
+# Exceções estritas (permitir benchmarks e códigos-fonte)
+!maquinas/**/benchmark_*.csv
+!src/*.c
+!src/*.h
